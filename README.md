@@ -43,7 +43,8 @@ public Response getById(@PathParam("id") UUID uid, @Context UriInfo uriInfo) {
 .resolve(()-> getTheContentHere)
 .rel("operation2").build();
     return Response.ok(new HAL<>(myobjectByUid, Arrays.asList(selfLink, otherLink, embeddedLink))).build();
-}```
+}
+```
 
 ## Installation
 
