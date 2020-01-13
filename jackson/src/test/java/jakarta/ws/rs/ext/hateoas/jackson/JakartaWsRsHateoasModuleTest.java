@@ -116,9 +116,7 @@ public class JakartaWsRsHateoasModuleTest {
 
     private String writeForTest(Object anything) {
         try {
-            String result = configuredOm().writerWithDefaultPrettyPrinter().writeValueAsString(anything);
-            System.out.println(result);
-            return result;
+            return configuredOm().writerWithDefaultPrettyPrinter().writeValueAsString(anything);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
