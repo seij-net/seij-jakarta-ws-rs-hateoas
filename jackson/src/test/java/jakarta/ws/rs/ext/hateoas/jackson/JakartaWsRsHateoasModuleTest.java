@@ -25,7 +25,7 @@ public class JakartaWsRsHateoasModuleTest {
     @Test
     public void testHalNoLinks() {
         HALTestBean bean = new HALTestBean("title_a", "content_a");
-        HAL<HALTestBean> content = new HAL<>(bean, Collections.emptyList());
+        HAL<HALTestBean> content = HAL.build(bean, Collections.emptyList());
         String result = writeForTest(content);
         Assertions.assertThat(JsonPath.from(result).getString("title")).isEqualTo("title_a");
         Assertions.assertThat(JsonPath.from(result).getString("content")).isEqualTo("content_a");
@@ -44,7 +44,7 @@ public class JakartaWsRsHateoasModuleTest {
                 .build();
         Link simpleLink3 = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName3")
                 .build();
-        HAL<HALTestBean> content = new HAL<>(bean, Arrays.asList(simpleLink1, simpleLink2, simpleLink3));
+        HAL<HALTestBean> content = HAL.build(bean, Arrays.asList(simpleLink1, simpleLink2, simpleLink3));
         JsonPath json = JsonPath.from(writeForTest(content));
         Assertions.assertThat(json.getString("title")).isEqualTo("title_a");
         Assertions.assertThat(json.getString("content")).isEqualTo("content_a");
@@ -76,7 +76,7 @@ public class JakartaWsRsHateoasModuleTest {
                 .embedded(true)
                 .resolve(() -> Arrays.asList(new HALTestOperationResult(UUID.randomUUID(), "operation result 4 1"), new HALTestOperationResult(UUID.randomUUID(), "operation result 4 2")))
                 .build();
-        HAL<HALTestBean> content = new HAL<>(bean, Arrays.asList(opNotResolved, opResolved, opResolvedAsNull, opResolvedAsList));
+        HAL<HALTestBean> content = HAL.build(bean, Arrays.asList(opNotResolved, opResolved, opResolvedAsNull, opResolvedAsList));
         JsonPath json = JsonPath.from(writeForTest(content));
         Assertions.assertThat(json.getString("title")).isEqualTo("title_a");
         Assertions.assertThat(json.getString("content")).isEqualTo("content_a");

@@ -53,4 +53,9 @@ class ProductService {
         productRepo.update(id, update)
         return productRepo.findById(id)
     }
+
+    fun reset() {
+        productRepo.reset()
+        productCategoryRepository.reset()
+    }
 }

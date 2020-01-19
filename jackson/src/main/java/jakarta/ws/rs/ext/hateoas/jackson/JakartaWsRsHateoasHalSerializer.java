@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import jakarta.ws.rs.ext.hateoas.HAL;
 import jakarta.ws.rs.ext.hateoas.LinkEmbeddable;
+import kotlin.text.StringsKt;
 
 import javax.ws.rs.core.Link;
 import java.io.IOException;
@@ -57,10 +58,17 @@ public class JakartaWsRsHateoasHalSerializer extends StdSerializer<HAL<?>> {
     }
 
     private void adaptEmbeddedLink(JsonGenerator jsonGenerator, LinkEmbeddable<?> link) throws IOException {
+        validateLink(link);
         jsonGenerator.writeObjectField(link.getRel(), link);
     }
 
     private void adaptStandardLink(JsonGenerator jsonGenerator, Link link) throws IOException {
+        validateLink(link);
         jsonGenerator.writeObjectField(link.getRel(), link);
+    }
+
+    private void validateLink(Link link) {
+        String rel = link.getRel();
+        if (rel==null || StringsKt.isBlank(rel)) throw new RuntimeException("Can not evaluate link "+ link.toString()+", rel property not defined");
     }
 }

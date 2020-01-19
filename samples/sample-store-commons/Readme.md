@@ -9,4 +9,6 @@ Contains sample elements, container agnostic
 Writing of REST APIs with links is still a mess and error prone. Main causes:
 * there is no meta-data bindings, no strong linking on Java classes and methods.
 * creating links and embedded links causes headaches
-* HAL providing shall not be explicit, since we shall not stick to HAL only (there are many alternatives) 
+* HAL providing shall not be explicit, since we shall not stick to HAL only (there are many alternatives)
+* writing links from resources is super-error prone: you have to 
+  .path(ProductResource.class).path(ProductResource.class, "methodname") 

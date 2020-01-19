@@ -1,9 +1,11 @@
 package net.seij.samplestore.resources;
 
 import jakarta.ws.rs.ext.hateoas.HAL;
+
 import jakarta.ws.rs.ext.hateoas.LinkEmbeddableBuilderImpl;
 import jakarta.ws.rs.ext.hateoas.MediaTypeHateoas;
 import net.seij.samplestore.services.Product;
+import net.seij.samplestore.services.ProductRepository;
 import net.seij.samplestore.services.ProductService;
 
 import javax.inject.Inject;
@@ -45,10 +47,12 @@ public class ProductResource {
                         .map(it -> {
                             Link selfProductLink = Link.fromUriBuilder(
                                     uriInfo.getBaseUriBuilder()
+                                            .path(ProductResource.class)
                                             .path(ProductResource.class, "findById")
                                             .resolveTemplate("id", it.getId().toString()))
+                                    .rel("self")
                                     .build();
-                            return new HAL(it, Arrays.asList(selfProductLink));
+                            return HAL.build(it, Arrays.asList(selfProductLink));
                         })
                         .collect(Collectors.toList())
                 )
@@ -56,7 +60,7 @@ public class ProductResource {
                 .rel("items")
                 .build();
         List<Link> links = Arrays.asList(selfLink, embeddedListLink);
-        return Response.ok(new HAL(new ProductListResult(products.size()), links)).build();
+        return Response.ok(HAL.build(new ProductListResult(products.size()), links)).build();
     }
 
     @GET
@@ -66,10 +70,14 @@ public class ProductResource {
         // self link
         Link selfLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()).rel("self").build();
         Product product = productService.findProductById(id);
-        Link deleteLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "delete").resolveTemplate("id", product.getId())).type("DELETE").build();
-        Link patchLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "update").resolveTemplate("id", product.getId())).type("PATCH").build();
+        Link deleteLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "delete").resolveTemplate("id", product.getId())).type("DELETE").build();
+        Link patchLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "update").resolveTemplate("id", product.getId())).type("PATCH").build();
         // TODO Need a simpler way to build HAL, remove explicit new, create builder
-        HAL entity = new HAL(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
+        HAL entity = HAL.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
         return Response.ok(entity).build();
     }
 
@@ -81,10 +89,14 @@ public class ProductResource {
         Link selfLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()).rel("self").build();
         Product product = productService.findProductByName(name);
         // TODO we shall not put them here since it's basic operations for Rest, but how shall we specify that those operations are available or not, especially delete? it's like "can we push the delete button?"
-        Link deleteLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "delete").resolveTemplate("id", product.getId())).type("DELETE").build();
-        Link patchLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "update").resolveTemplate("id", product.getId())).type("PATCH").build();
+        Link deleteLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "delete").resolveTemplate("id", product.getId())).type("DELETE").build();
+        Link patchLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "update").resolveTemplate("id", product.getId())).type("PATCH").build();
         // TODO Need a simpler way to build HAL, remove explicit new, create builder
-        HAL entity = new HAL(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
+        HAL entity = HAL.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
         return Response.ok(entity).build();
     }
 
@@ -93,12 +105,13 @@ public class ProductResource {
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response create(ProductApiModelInitializer initializer, @Context UriInfo uriInfo) {
         // self link
-        Link selfLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()).rel("self").build();
         UUID createdId = productService.createProduct(initializer.getName(), initializer.getDescription());
         // TODO dangerous and error prone
-        Link createdLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "findById").resolveTemplate("id", createdId)).build();
+        Link createdLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "findById").resolveTemplate("id", createdId)).rel("self").build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(new HAL<>("", Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(HAL.build(Arrays.asList(createdLink))).build();
     }
 
     @PATCH
@@ -112,9 +125,11 @@ public class ProductResource {
                 patch.getDescription().apply(value -> productService.updateProductDescription(id, value))
         );
         // TODO dangerous and error prone
-        Link createdLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "findById").resolveTemplate("id", id)).build();
+        Link createdLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "findById").resolveTemplate("id", id)).build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(new HAL<>(patchResult, Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(HAL.build(patchResult, Arrays.asList(selfLink, createdLink))).build();
     }
 
     @POST
@@ -125,9 +140,11 @@ public class ProductResource {
         Link selfLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()).rel("self").build();
         Product product = productService.updateProduct(id, toProductUpdater(update));
         // TODO dangerous and error prone
-        Link createdLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder().path(ProductResource.class, "findById").resolveTemplate("id", product.getId())).build();
+        Link createdLink = Link.fromUriBuilder(uriInfo.getBaseUriBuilder()
+                .path(ProductResource.class)
+                .path(ProductResource.class, "findById").resolveTemplate("id", product.getId())).build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(new HAL<>(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(HAL.build(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
     }
 
     @DELETE

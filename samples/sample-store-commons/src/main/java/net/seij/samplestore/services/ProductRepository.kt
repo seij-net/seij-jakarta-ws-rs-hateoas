@@ -46,4 +46,8 @@ class ProductRepository {
         products[id]!!.description = update.description
         return products[id]!!
     }
+
+    fun reset() {
+        products.clear()
+    }
 }

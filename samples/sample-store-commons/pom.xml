@@ -100,6 +100,8 @@
                    </compilerPlugins>
                    <pluginOptions>
                        <option>all-open:annotation=javax.enterprise.context.ApplicationScoped</option>
+                       <option>all-open:annotation=net.seij.samplestore.resources.ApiModel</option>
+                       <option>no-arg:annotation=net.seij.samplestore.resources.ApiModel</option>
                    </pluginOptions>
                    <args>
                        <!-- activates null strict checks -->

@@ -20,4 +20,8 @@ class ProductCategoryRepository {
     fun delete(productId: UUID) {
         categories.remove(productId)
     }
+
+    fun reset() {
+        categories.clear();
+    }
 }

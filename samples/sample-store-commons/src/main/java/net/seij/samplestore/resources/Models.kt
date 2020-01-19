@@ -6,6 +6,7 @@ import net.seij.samplestore.services.Product
 import net.seij.samplestore.services.ProductUpdater
 import java.util.*
 
+annotation class ApiModel
 
 data class ProductListResult(
         val total: Int
@@ -17,7 +18,8 @@ data class ProductApiModel(
         val description: String?
 )
 
-data class ProductApiModelInitializer(
+@ApiModel
+class ProductApiModelInitializer(
         val name: String,
         val description: String?
 )
