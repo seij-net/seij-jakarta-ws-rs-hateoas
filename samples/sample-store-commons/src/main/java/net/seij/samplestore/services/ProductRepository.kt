@@ -2,7 +2,9 @@ package net.seij.samplestore.services
 
 import net.seij.samplestore.resources.ProductApiModelUpdater
 import java.util.*
+import javax.enterprise.context.ApplicationScoped
 
+@ApplicationScoped
 class ProductRepository {
 
     private val products = mutableMapOf<UUID, Product>()

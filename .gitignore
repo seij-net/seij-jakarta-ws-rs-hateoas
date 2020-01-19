@@ -2,10 +2,12 @@
 # =================
 
 .idea
-parent.iml
-core/core.iml
-jackson/jackson.iml
-samples/sample-store-commons/sample-store-commons.iml
+/parent.iml
+/core/core.iml
+/jackson/jackson.iml
+/samples/sample-store-commons/sample-store-commons.iml
+/samples/sample-store-spring/sample-store-spring.iml
+/samples/sample-store-liberty/sample-store-liberty.iml
 
 # auto-generated 
 # ==============
@@ -375,3 +377,4 @@ tags
 .history
 
 # End of https://www.gitignore.io/api/vim,node,emacs,maven,eclipse,intellij,sublimetext,visualstudiocode
+

@@ -1,7 +1,9 @@
 package net.seij.samplestore.services
 
 import java.util.*
+import javax.enterprise.context.ApplicationScoped
 
+@ApplicationScoped
 class ProductCategoryRepository {
 
     private val categories = mutableMapOf<UUID, ProductCategory>()
