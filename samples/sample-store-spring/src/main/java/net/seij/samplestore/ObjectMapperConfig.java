@@ -5,6 +5,12 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+/**
+ * According to Jackson auto-configurer, you need to implement {@link Jackson2ObjectMapperBuilderCustomizer}
+ * to be able to add a new module.
+ * <p>
+ * Here we add the {@link JakartaWsRsHateoasModule} so Jackson knows how to handle links and embedded links
+ */
 @Configuration
 public class ObjectMapperConfig implements Jackson2ObjectMapperBuilderCustomizer {
     @Override
