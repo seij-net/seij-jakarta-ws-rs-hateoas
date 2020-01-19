@@ -1,36 +1,31 @@
 package net.seij.samplestore
 
-import net.seij.samplestore.resources.ProductApiModelInitializer
+import io.restassured.module.kotlin.extensions.Given
+import io.restassured.module.kotlin.extensions.Then
+import io.restassured.module.kotlin.extensions.When
 import net.seij.samplestore.services.ProductCategoryRepository
 import net.seij.samplestore.services.ProductRepository
 import net.seij.samplestore.services.ProductService
+import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.web.server.LocalServerPort
-
 import javax.inject.Inject
+import javax.json.Json
+import javax.ws.rs.core.MediaType
 
-import org.assertj.core.api.Assertions.assertThat
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@JaxRsIT
 internal class SampleStoreSpringApplicationTests {
-    @LocalServerPort
-    private val port: Int = 0
-
-    @Autowired
-    private lateinit var restTemplate: TestRestTemplate
 
     @Inject
-    private lateinit var  productRepository: ProductRepository
+    private lateinit var productRepository: ProductRepository
 
     @Inject
-    private lateinit var  productCategoryRepository: ProductCategoryRepository
+    private lateinit var productCategoryRepository: ProductCategoryRepository
 
     @Inject
-    private lateinit var  productService: ProductService
+    private lateinit var productService: ProductService
+
 
     @BeforeEach
     fun beforeEach() {
@@ -47,18 +42,50 @@ internal class SampleStoreSpringApplicationTests {
     @Test
     @Throws(Exception::class)
     fun shouldGetListOfProductJson() {
-        assertThat(this.restTemplate.getForObject("http://localhost:$port/products", String::class.java)).contains("_embedded")
+        Given {
+            contentType(MediaType.APPLICATION_JSON)
+        } When {
+            get("/products")
+        } Then {
+            body(Matchers.containsString("_embedded"))
+        }
     }
 
     @Test
     @Throws(Exception::class)
     fun shouldPostProductJson() {
-        val actual = this.restTemplate.postForObject("http://localhost:$port/products", ProductApiModelInitializer("product1", "description1"), String::class.java)
-        assertThat(actual).contains("_links")
-        assertThat(this.restTemplate.getForObject("http://localhost:$port/products", String::class.java)).contains("1")
-        val actual2 = this.restTemplate.postForObject("http://localhost:$port/products", ProductApiModelInitializer("product2", "description2"), String::class.java)
-        assertThat(actual2).contains("_links")
-        assertThat(this.restTemplate.getForObject("http://localhost:$port/products", String::class.java)).contains("2")
+        Given {
+            contentType(MediaType.APPLICATION_JSON)
+            body(Json.createObjectBuilder()
+                    .add("name", "product1")
+                    .add("description", "description1")
+                    .build().toString())
+        } When {
+            post("/products")
+        } Then {
+            body(Matchers.containsString("_links"))
+        }
+
+        Given {
+            contentType(MediaType.APPLICATION_JSON)
+            body(Json.createObjectBuilder()
+                    .add("name", "product2")
+                    .add("description", "description2")
+                    .build().toString())
+        } When {
+            post("/products")
+        } Then {
+            body(Matchers.containsString("_links"))
+        }
+
+        Given {
+            contentType(MediaType.APPLICATION_JSON)
+        } When {
+            get("/products")
+        } Then {
+            body(Matchers.containsString("\"total\":2"))
+        }
+
     }
 }
 
