@@ -1,61 +1,65 @@
-package net.seij.samplestore;
+package net.seij.samplestore
 
-import net.seij.samplestore.resources.ProductApiModelInitializer;
-import net.seij.samplestore.services.ProductCategoryRepository;
-import net.seij.samplestore.services.ProductRepository;
-import net.seij.samplestore.services.ProductService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import net.seij.samplestore.resources.ProductApiModelInitializer
+import net.seij.samplestore.services.ProductCategoryRepository
+import net.seij.samplestore.services.ProductRepository
+import net.seij.samplestore.services.ProductService
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.web.server.LocalServerPort
 
-import javax.inject.Inject;
+import javax.inject.Inject
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.Assertions.assertThat
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SampleStoreSpringApplicationTests {
-	@LocalServerPort
-	private int port;
+internal class SampleStoreSpringApplicationTests {
+    @LocalServerPort
+    private val port: Int = 0
 
-	@Autowired
-	private TestRestTemplate restTemplate;
-
-    @Inject
-    private ProductRepository productRepository;
+    @Autowired
+    private lateinit var restTemplate: TestRestTemplate
 
     @Inject
-    private ProductCategoryRepository productCategoryRepository;
+    private lateinit var  productRepository: ProductRepository
 
     @Inject
-    private ProductService productService;
+    private lateinit var  productCategoryRepository: ProductCategoryRepository
+
+    @Inject
+    private lateinit var  productService: ProductService
 
     @BeforeEach
-    public void beforeEach() {
-        productService.reset();
+    fun beforeEach() {
+        productService.reset()
     }
 
     @Test
-    public void contexLoads() {
-        assertThat(productRepository).isNotNull();
-        assertThat(productCategoryRepository).isNotNull();
-        assertThat(productService).isNotNull();
+    fun contexLoads() {
+        assertThat(productRepository).isNotNull
+        assertThat(productCategoryRepository).isNotNull
+        assertThat(productService).isNotNull
     }
-	@Test
-	public void shouldGetListOfProductJson() throws Exception {
-		assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/products", String.class)).contains("_embedded");
-	}
-	@Test
-	public void shouldPostProductJson() throws Exception {
-        String actual = this.restTemplate.postForObject("http://localhost:" + port + "/products", new ProductApiModelInitializer("product1", "description1"), String.class);
-        assertThat(actual).contains("_links");
-        assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/products", String.class)).contains("1");
-        String actual2 = this.restTemplate.postForObject("http://localhost:" + port + "/products", new ProductApiModelInitializer("product2", "description2"), String.class);
-        assertThat(actual2).contains("_links");
-        assertThat(this.restTemplate.getForObject("http://localhost:" + port + "/products", String.class)).contains("2");
-	}
+
+    @Test
+    @Throws(Exception::class)
+    fun shouldGetListOfProductJson() {
+        assertThat(this.restTemplate.getForObject("http://localhost:$port/products", String::class.java)).contains("_embedded")
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun shouldPostProductJson() {
+        val actual = this.restTemplate.postForObject("http://localhost:$port/products", ProductApiModelInitializer("product1", "description1"), String::class.java)
+        assertThat(actual).contains("_links")
+        assertThat(this.restTemplate.getForObject("http://localhost:$port/products", String::class.java)).contains("1")
+        val actual2 = this.restTemplate.postForObject("http://localhost:$port/products", ProductApiModelInitializer("product2", "description2"), String::class.java)
+        assertThat(actual2).contains("_links")
+        assertThat(this.restTemplate.getForObject("http://localhost:$port/products", String::class.java)).contains("2")
+    }
 }
 
 
