@@ -9,11 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
-/**
- * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
- * @version $Revision: 1 $
- */
-public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
+public class LinkEmbeddableBuilder<T> implements Link.Builder {
     /**
      * A map for all the link parameters such as "rel", "type", etc.
      */
@@ -23,18 +19,21 @@ public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
     protected boolean embedded = false;
     protected Supplier<T> resolver = () -> null;
 
-    public LinkEmbeddableBuilderImpl<T> resolve(Supplier<T> resolver) {
+    protected LinkEmbeddableBuilder() {
+    }
+
+    public LinkEmbeddableBuilder<T> resolve(Supplier<T> resolver) {
         this.resolver = resolver;
         return this;
     }
 
-    public LinkEmbeddableBuilderImpl<T> embedded(boolean embedded) {
+    public LinkEmbeddableBuilder<T> embedded(boolean embedded) {
         this.embedded = embedded;
         return this;
     }
 
     @Override
-    public Link.Builder link(Link link) {
+    public LinkEmbeddableBuilder<T> link(Link link) {
         uriBuilder = UriBuilder.fromUri(link.getUri());
         this.map.clear();
         this.map.putAll(link.getParams());
@@ -42,33 +41,33 @@ public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
     }
 
     @Override
-    public Link.Builder link(String link) {
+    public LinkEmbeddableBuilder<T> link(String link) {
         Link l = LinkImpl.valueOf(link);
         return link(l);
     }
 
     @Override
-    public LinkEmbeddableBuilderImpl<T> uriBuilder(UriBuilder uriBuilder) {
+    public LinkEmbeddableBuilder<T> uriBuilder(UriBuilder uriBuilder) {
         this.uriBuilder = uriBuilder.clone();
         return this;
     }
 
     @Override
-    public Link.Builder uri(URI uri) {
+    public LinkEmbeddableBuilder<T> uri(URI uri) {
         if (uri == null) throw new IllegalArgumentException("uri param was null");
         uriBuilder = UriBuilder.fromUri(uri);
         return this;
     }
 
     @Override
-    public Link.Builder uri(String uri) throws IllegalArgumentException {
+    public LinkEmbeddableBuilder<T> uri(String uri) throws IllegalArgumentException {
         if (uri == null) throw new IllegalArgumentException("uri param was null");
         uriBuilder = UriBuilder.fromUri(uri);
         return this;
     }
 
     @Override
-    public LinkEmbeddableBuilderImpl<T> rel(String rel) {
+    public LinkEmbeddableBuilder<T> rel(String rel) {
         if (rel == null) throw new IllegalArgumentException("rel param was null");
         final String rels = this.map.get(Link.REL);
         param(Link.REL, rels == null ? rel : rels + " " + rel);
@@ -76,7 +75,7 @@ public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
     }
 
     @Override
-    public Link.Builder title(String title) {
+    public LinkEmbeddableBuilder<T> title(String title) {
         if (title == null) throw new IllegalArgumentException("title param was null");
         param(Link.TITLE, title);
         return this;
@@ -84,14 +83,14 @@ public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
     }
 
     @Override
-    public Link.Builder type(String type) {
+    public LinkEmbeddableBuilder<T> type(String type) {
         if (type == null) throw new IllegalArgumentException("type param was null");
         param(Link.TYPE, type);
         return this;
     }
 
     @Override
-    public Link.Builder param(String name, String value) throws IllegalArgumentException {
+    public LinkEmbeddableBuilder<T> param(String name, String value) throws IllegalArgumentException {
         if (name == null) throw new IllegalArgumentException("name param was null");
         if (value == null) throw new IllegalArgumentException("value param was null");
         this.map.put(name, value);
@@ -114,7 +113,7 @@ public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
     }
 
     @Override
-    public Link buildRelativized(URI uri, Object... values) {
+    public LinkEmbeddable<T> buildRelativized(URI uri, Object... values) {
         if (uri == null) throw new IllegalArgumentException("uri param was null");
         if (values == null) throw new IllegalArgumentException("value param was null");
         URI built = uriBuilder.build(values);
@@ -124,13 +123,13 @@ public class LinkEmbeddableBuilderImpl<T> implements Link.Builder {
     }
 
     @Override
-    public Link.Builder baseUri(URI uri) {
+    public LinkEmbeddableBuilder<T> baseUri(URI uri) {
         this.baseUri = uri;
         return this;
     }
 
     @Override
-    public Link.Builder baseUri(String uri) {
+    public LinkEmbeddableBuilder<T> baseUri(String uri) {
         this.baseUri = URI.create(uri);
         return this;
     }

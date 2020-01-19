@@ -4,14 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
 import jakarta.ws.rs.ext.hateoas.EntityLinked;
-import jakarta.ws.rs.ext.hateoas.LinkEmbeddableBuilderImpl;
+import jakarta.ws.rs.ext.hateoas.Links;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Map;
+import java.util.UUID;
 
 import static io.restassured.path.json.JsonPath.from;
 
@@ -29,15 +32,15 @@ public class JakartaWsRsHateoasModuleTest {
     @Test
     public void testHalStandardLinks() {
         HALTestBean bean = new HALTestBean("title_a", "content_a");
-        Link simpleLink1 = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName1")
+        Link simpleLink1 = Links.fromUriBuilder("myOperationName1", UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .param("myparam1_1", "myvalue1_1")
                 .param("myparam1_2", "myvalue1_2")
                 .build();
-        Link simpleLink2 = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName2")
+        Link simpleLink2 = Links.fromUriBuilder("myOperationName2", UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .param("myparam2_1", "myvalue2_1")
                 .param("myparam2_2", "myvalue2_2")
                 .build();
-        Link simpleLink3 = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName3")
+        Link simpleLink3 = Links.fromUriBuilder("myOperationName3", UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .build();
         EntityLinked<HALTestBean> content = EntityLinked.build(bean, Arrays.asList(simpleLink1, simpleLink2, simpleLink3));
         JsonPath json = JsonPath.from(writeForTest(content));
@@ -54,22 +57,20 @@ public class JakartaWsRsHateoasModuleTest {
     @Test
     public void testHalEmbeddedLinks() {
         HALTestBean bean = new HALTestBean("title_a", "content_a");
-        Link opNotResolved = new LinkEmbeddableBuilderImpl<>().uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName1")
+        Link opNotResolved = Links.builder("myOperationName1")
+                .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .param("myparam1_1", "myvalue1_1")
                 .param("myparam1_2", "myvalue1_2")
                 .build();
         UUID uid1 = UUID.randomUUID();
-        Link opResolved = new LinkEmbeddableBuilderImpl<HALTestOperationResult>().uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName2")
-                .embedded(true)
-                .resolve(() -> new HALTestOperationResult(uid1, "operation result 2"))
+        Link opResolved = Links.builder("myOperationName2", () -> new HALTestOperationResult(uid1, "operation result 2"))
+                .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .build();
-        Link opResolvedAsNull = new LinkEmbeddableBuilderImpl<HALTestOperationResult>().uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName3")
-                .embedded(true)
-                .resolve(() -> null)
+        Link opResolvedAsNull = Links.builder("myOperationName3", () -> null)
+                .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .build();
-        Link opResolvedAsList = new LinkEmbeddableBuilderImpl<List<HALTestOperationResult>>().uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName4")
-                .embedded(true)
-                .resolve(() -> Arrays.asList(new HALTestOperationResult(UUID.randomUUID(), "operation result 4 1"), new HALTestOperationResult(UUID.randomUUID(), "operation result 4 2")))
+        Link opResolvedAsList = Links.builder("myOperationName4", () -> Arrays.asList(new HALTestOperationResult(UUID.randomUUID(), "operation result 4 1"), new HALTestOperationResult(UUID.randomUUID(), "operation result 4 2")))
+                .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .build();
         EntityLinked<HALTestBean> content = EntityLinked.build(bean, Arrays.asList(opNotResolved, opResolved, opResolvedAsNull, opResolvedAsList));
         JsonPath json = JsonPath.from(writeForTest(content));
@@ -89,7 +90,7 @@ public class JakartaWsRsHateoasModuleTest {
 
     @Test
     public void testSimpleLink() {
-        Link link = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName")
+        Link link = Links.fromUriBuilder("myOperationName", UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .param("myparam1", "myvalue1")
                 .param("myparam2", "myvalue2")
                 .build();
@@ -102,7 +103,7 @@ public class JakartaWsRsHateoasModuleTest {
 
     @Test
     public void testSimpleLinkNotParams() {
-        Link link = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName").build();
+        Link link = Links.fromUriBuilder("myOperationName", UriBuilder.fromUri("http://localhost:8080/my/path")).build();
         JsonPath json = JsonPath.from(writeForTest(link));
         Assertions.assertThat(json.getString("href")).isEqualTo("http://localhost:8080/my/path");
         Assertions.assertThat(json.getString("params")).isNull();
@@ -117,7 +118,7 @@ public class JakartaWsRsHateoasModuleTest {
 
     @Test
     public void testEmptyEntityWithSimpleLink() {
-        Link link = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName").build();
+        Link link = Links.fromUriBuilder("myOperationName", UriBuilder.fromUri("http://localhost:8080/my/path")).build();
         String text = writeForTest(EntityLinked.build(Arrays.asList(link)));
         Map<String, Object> str = from(text).get();
         Assertions.assertThat(str).containsKey("_links");
@@ -125,11 +126,8 @@ public class JakartaWsRsHateoasModuleTest {
 
     @Test
     public void testEmptyEntityWithEmbeddedLink() {
-        Link link = new LinkEmbeddableBuilderImpl<HALTestOperationResult>()
-                .embedded(true)
-                .resolve(() -> new HALTestOperationResult(UUID.randomUUID(), "name"))
+        Link link = Links.builder("myOperationName", () -> new HALTestOperationResult(UUID.randomUUID(), "name"))
                 .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
-                .rel("myOperationName")
                 .build();
         String text = writeForTest(EntityLinked.build(Arrays.asList(link)));
         Map<String, Object> str = from(text).get();

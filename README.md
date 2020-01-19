@@ -16,8 +16,8 @@ The goal is to achieve a variety of formats but is currently focused on
 * Using Jackson (at first, Jsonb should be next)
 * Shall work using
   * JavaEE 8 / JakartaEE 8 (tested with Wildfly 17, with embedds Resteasy)
-  * Spring(-Boot) with a JaxRS implementation (tested with Resteasy)
-
+  * Spring(-Boot) with a JaxRS implementation (tested with Resteasy and Jackson)
+* Provide builder tools for links to avoid common errors and simplify syntax
 
 
 ## Code Samples
@@ -29,20 +29,17 @@ Configure Jackson to add module (Spring-way or JavaEE way)
 ObjectMapper om = (new ObjectMapper())
 om.addModule(JakartaWsRsHateoasModule.Instance)
 ```
-In Rest endpoints, return a HAL object with additional links :
+In Rest endpoints, return a EntityLinked object with additional links :
 
 ```
 @GET
 @Path("{id}")
 @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
 public Response getById(@PathParam("id") UUID uid, @Context UriInfo uriInfo) {
-    Link selfLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()).rel("self").build();
-    Link otherLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()...).rel("operation1").build();
-    Link embeddedLink = new LinkEmbedded().fromUriBuilder(uriInfo.getRequestUriBuilder()...)
-.embedded(true)
-.resolve(()-> getTheContentHere)
-.rel("operation2").build();
-    return Response.ok(new HAL<>(myobjectByUid, Arrays.asList(selfLink, otherLink, embeddedLink))).build();
+    Link selfLink = Links.fromUriBuilder("self", uriInfo.getRequestUriBuilder()).rel("self").build();
+    Link otherLink = Links.fromUriBuilder("operation1", uriInfo.getRequestUriBuilder()...).build();
+    Link embeddedLink = Links.fromUriBuilder("operation2", ()-> getTheContentHere, uriInfo.getRequestUriBuilder()).build();
+    return Response.ok(new EntityLinked<>(myobjectByUid, Arrays.asList(selfLink, otherLink, embeddedLink))).build();
 }
 ```
 
