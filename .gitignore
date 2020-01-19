@@ -1,6 +1,12 @@
 # Project specifics
 # =================
 
+.idea
+parent.iml
+core/core.iml
+jackson/jackson.iml
+samples/sample-store-commons/sample-store-commons.iml
+
 # auto-generated 
 # ==============
 
