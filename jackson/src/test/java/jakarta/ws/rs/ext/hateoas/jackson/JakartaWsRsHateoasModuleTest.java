@@ -2,30 +2,25 @@ package jakarta.ws.rs.ext.hateoas.jackson;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.ws.rs.ext.hateoas.HAL;
-import jakarta.ws.rs.ext.hateoas.jackson.JakartaWsRsHateoasModule;
-import jakarta.ws.rs.ext.hateoas.LinkEmbeddableBuilderImpl;
 import io.restassured.path.json.JsonPath;
+import jakarta.ws.rs.ext.hateoas.EntityLinked;
+import jakarta.ws.rs.ext.hateoas.LinkEmbeddableBuilderImpl;
 import org.assertj.core.api.Assertions;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static io.restassured.path.json.JsonPath.from;
-import static org.assertj.core.api.Assertions.assertThat;
 
 
 public class JakartaWsRsHateoasModuleTest {
     @Test
     public void testHalNoLinks() {
         HALTestBean bean = new HALTestBean("title_a", "content_a");
-        HAL<HALTestBean> content = HAL.build(bean, Collections.emptyList());
+        EntityLinked<HALTestBean> content = EntityLinked.build(bean, Collections.emptyList());
         String result = writeForTest(content);
         Assertions.assertThat(JsonPath.from(result).getString("title")).isEqualTo("title_a");
         Assertions.assertThat(JsonPath.from(result).getString("content")).isEqualTo("content_a");
@@ -44,7 +39,7 @@ public class JakartaWsRsHateoasModuleTest {
                 .build();
         Link simpleLink3 = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName3")
                 .build();
-        HAL<HALTestBean> content = HAL.build(bean, Arrays.asList(simpleLink1, simpleLink2, simpleLink3));
+        EntityLinked<HALTestBean> content = EntityLinked.build(bean, Arrays.asList(simpleLink1, simpleLink2, simpleLink3));
         JsonPath json = JsonPath.from(writeForTest(content));
         Assertions.assertThat(json.getString("title")).isEqualTo("title_a");
         Assertions.assertThat(json.getString("content")).isEqualTo("content_a");
@@ -76,7 +71,7 @@ public class JakartaWsRsHateoasModuleTest {
                 .embedded(true)
                 .resolve(() -> Arrays.asList(new HALTestOperationResult(UUID.randomUUID(), "operation result 4 1"), new HALTestOperationResult(UUID.randomUUID(), "operation result 4 2")))
                 .build();
-        HAL<HALTestBean> content = HAL.build(bean, Arrays.asList(opNotResolved, opResolved, opResolvedAsNull, opResolvedAsList));
+        EntityLinked<HALTestBean> content = EntityLinked.build(bean, Arrays.asList(opNotResolved, opResolved, opResolvedAsNull, opResolvedAsList));
         JsonPath json = JsonPath.from(writeForTest(content));
         Assertions.assertThat(json.getString("title")).isEqualTo("title_a");
         Assertions.assertThat(json.getString("content")).isEqualTo("content_a");
@@ -107,11 +102,38 @@ public class JakartaWsRsHateoasModuleTest {
 
     @Test
     public void testSimpleLinkNotParams() {
-        Link link = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName")
-                .build();
+        Link link = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName").build();
         JsonPath json = JsonPath.from(writeForTest(link));
         Assertions.assertThat(json.getString("href")).isEqualTo("http://localhost:8080/my/path");
         Assertions.assertThat(json.getString("params")).isNull();
+    }
+
+    @Test
+    public void testEmptyEntity() {
+        String text = writeForTest(EntityLinked.build());
+        Map<String, Object> str = from(text).get();
+        Assertions.assertThat(str).isEmpty();
+    }
+
+    @Test
+    public void testEmptyEntityWithSimpleLink() {
+        Link link = Link.fromUriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path")).rel("myOperationName").build();
+        String text = writeForTest(EntityLinked.build(Arrays.asList(link)));
+        Map<String, Object> str = from(text).get();
+        Assertions.assertThat(str).containsKey("_links");
+    }
+
+    @Test
+    public void testEmptyEntityWithEmbeddedLink() {
+        Link link = new LinkEmbeddableBuilderImpl<HALTestOperationResult>()
+                .embedded(true)
+                .resolve(() -> new HALTestOperationResult(UUID.randomUUID(), "name"))
+                .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
+                .rel("myOperationName")
+                .build();
+        String text = writeForTest(EntityLinked.build(Arrays.asList(link)));
+        Map<String, Object> str = from(text).get();
+        Assertions.assertThat(str).containsKey("_embedded");
     }
 
     private String writeForTest(Object anything) {

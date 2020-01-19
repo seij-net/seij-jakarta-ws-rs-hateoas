@@ -1,11 +1,9 @@
 package net.seij.samplestore.resources;
 
-import jakarta.ws.rs.ext.hateoas.HAL;
-
+import jakarta.ws.rs.ext.hateoas.EntityLinked;
 import jakarta.ws.rs.ext.hateoas.LinkEmbeddableBuilderImpl;
 import jakarta.ws.rs.ext.hateoas.MediaTypeHateoas;
 import net.seij.samplestore.services.Product;
-import net.seij.samplestore.services.ProductRepository;
 import net.seij.samplestore.services.ProductService;
 
 import javax.inject.Inject;
@@ -52,7 +50,7 @@ public class ProductResource {
                                             .resolveTemplate("id", it.getId().toString()))
                                     .rel("self")
                                     .build();
-                            return HAL.build(it, Arrays.asList(selfProductLink));
+                            return EntityLinked.build(it, Arrays.asList(selfProductLink));
                         })
                         .collect(Collectors.toList())
                 )
@@ -60,7 +58,7 @@ public class ProductResource {
                 .rel("items")
                 .build();
         List<Link> links = Arrays.asList(selfLink, embeddedListLink);
-        return Response.ok(HAL.build(new ProductListResult(products.size()), links)).build();
+        return Response.ok(EntityLinked.build(new ProductListResult(products.size()), links)).build();
     }
 
     @GET
@@ -77,7 +75,7 @@ public class ProductResource {
                 .path(ProductResource.class)
                 .path(ProductResource.class, "update").resolveTemplate("id", product.getId())).type("PATCH").build();
         // TODO Need a simpler way to build HAL, remove explicit new, create builder
-        HAL entity = HAL.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
+        EntityLinked entity = EntityLinked.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
         return Response.ok(entity).build();
     }
 
@@ -96,7 +94,7 @@ public class ProductResource {
                 .path(ProductResource.class)
                 .path(ProductResource.class, "update").resolveTemplate("id", product.getId())).type("PATCH").build();
         // TODO Need a simpler way to build HAL, remove explicit new, create builder
-        HAL entity = HAL.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
+        EntityLinked entity = EntityLinked.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
         return Response.ok(entity).build();
     }
 
@@ -111,7 +109,7 @@ public class ProductResource {
                 .path(ProductResource.class)
                 .path(ProductResource.class, "findById").resolveTemplate("id", createdId)).rel("self").build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(HAL.build(Arrays.asList(createdLink))).build();
+        return Response.ok(EntityLinked.build(Arrays.asList(createdLink))).build();
     }
 
     @PATCH
@@ -129,7 +127,7 @@ public class ProductResource {
                 .path(ProductResource.class)
                 .path(ProductResource.class, "findById").resolveTemplate("id", id)).build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(HAL.build(patchResult, Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(EntityLinked.build(patchResult, Arrays.asList(selfLink, createdLink))).build();
     }
 
     @POST
@@ -144,7 +142,7 @@ public class ProductResource {
                 .path(ProductResource.class)
                 .path(ProductResource.class, "findById").resolveTemplate("id", product.getId())).build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(HAL.build(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(EntityLinked.build(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
     }
 
     @DELETE

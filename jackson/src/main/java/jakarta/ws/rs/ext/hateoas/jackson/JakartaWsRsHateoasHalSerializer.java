@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.util.NameTransformer;
-import jakarta.ws.rs.ext.hateoas.HAL;
+import jakarta.ws.rs.ext.hateoas.EntityLinked;
 import jakarta.ws.rs.ext.hateoas.LinkEmbeddable;
 import kotlin.text.StringsKt;
 
@@ -15,32 +15,36 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JakartaWsRsHateoasHalSerializer extends StdSerializer<HAL<?>> {
+public class JakartaWsRsHateoasHalSerializer extends StdSerializer<EntityLinked<?>> {
 
     public static final JakartaWsRsHateoasHalSerializer Instance = new JakartaWsRsHateoasHalSerializer();
 
     private JakartaWsRsHateoasHalSerializer() {
-        super(HAL.class, true);
+        super(EntityLinked.class, true);
     }
 
     @Override
-    public void serialize(HAL<?> hal, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        Object entity = hal.getEntity();
+    public void serialize(EntityLinked<?> entityLinked, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        Object entity = entityLinked.getEntity();
         jsonGenerator.writeStartObject(entity);
         Class<?> entityClass = entity.getClass();
-        JsonSerializer<Object> valueSerializer = serializerProvider.findValueSerializer(entityClass).unwrappingSerializer(NameTransformer.NOP);
-        valueSerializer.serialize(entity, jsonGenerator, serializerProvider);
-        if (hal.getLinks().size() > 0) {
-            adaptLinks(hal, jsonGenerator);
+        if (entityLinked.getEntity() != EntityLinked.ENTITY_LINKED_UNIT) {
+            JsonSerializer<Object> valueSerializer = serializerProvider.findValueSerializer(entityClass).unwrappingSerializer(NameTransformer.NOP);
+            valueSerializer.serialize(entity, jsonGenerator, serializerProvider);
+        }
+        if (entityLinked.getLinks().size() > 0) {
+            adaptLinks(entityLinked, jsonGenerator);
         }
         jsonGenerator.writeEndObject();
     }
 
-    private void adaptLinks(HAL<?> hal, JsonGenerator jsonGenerator) throws IOException {
+    private void adaptLinks(EntityLinked<?> entityLinked, JsonGenerator jsonGenerator) throws IOException {
         // Partitions the list to keed embedded links separated from regular links
-        Map<Boolean, List<Link>> linkTypeSegregation = hal.getLinks().stream().collect(Collectors.partitioningBy(it -> it instanceof LinkEmbeddable && ((LinkEmbeddable<?>) it).embedded));
+        Map<Boolean, List<Link>> linkTypeSegregation = entityLinked.getLinks().stream().collect(Collectors.partitioningBy(it -> it instanceof LinkEmbeddable && ((LinkEmbeddable<?>) it).embedded));
         List<Link> standard = linkTypeSegregation.get(false);
+
         List<LinkEmbeddable<?>> embedded = linkTypeSegregation.get(true).stream().map(it -> ((LinkEmbeddable<?>) it)).collect(Collectors.toList());
+
         if (!standard.isEmpty()) {
             jsonGenerator.writeObjectFieldStart("_links");
             for (Link link : standard) {
@@ -69,6 +73,7 @@ public class JakartaWsRsHateoasHalSerializer extends StdSerializer<HAL<?>> {
 
     private void validateLink(Link link) {
         String rel = link.getRel();
-        if (rel==null || StringsKt.isBlank(rel)) throw new RuntimeException("Can not evaluate link "+ link.toString()+", rel property not defined");
+        if (rel == null || StringsKt.isBlank(rel))
+            throw new RuntimeException("Can not evaluate link " + link.toString() + ", rel property not defined");
     }
 }

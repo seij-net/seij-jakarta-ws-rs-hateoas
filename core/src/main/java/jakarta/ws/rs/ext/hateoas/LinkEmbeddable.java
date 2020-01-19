@@ -9,31 +9,25 @@ import java.util.function.Supplier;
 
 public class LinkEmbeddable<T> extends Link {
 
+    protected static final RuntimeDelegate.HeaderDelegate<Link> delegate =
+            RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
+    public final Supplier<T> resolver;
+    public final boolean embedded;
     protected final URI uri;
-
     /**
      * A map for all the link parameters such as "rel", "type", etc.
      */
     protected final Map<String, String> map;
-
-    protected static final RuntimeDelegate.HeaderDelegate<Link> delegate =
-            RuntimeDelegate.getInstance().createHeaderDelegate(Link.class);
-
-    public static Link valueOf(String value)
-    {
-        return delegate.fromString(value);
-    }
-
-    public final Supplier<T> resolver;
-    public final boolean embedded;
-
-    LinkEmbeddable(final URI uri, final Map<String, String> map, Supplier<T> resolver, boolean embedded)
-    {
+    LinkEmbeddable(final URI uri, final Map<String, String> map, Supplier<T> resolver, boolean embedded) {
         this.uri = uri;
-        this.map = map.isEmpty() ? Collections.<String, String> emptyMap() : Collections
+        this.map = map.isEmpty() ? Collections.<String, String>emptyMap() : Collections
                 .unmodifiableMap(new HashMap<String, String>(map));
         this.resolver = resolver;
         this.embedded = embedded;
+    }
+
+    public static Link valueOf(String value) {
+        return delegate.fromString(value);
     }
 
     @Override
