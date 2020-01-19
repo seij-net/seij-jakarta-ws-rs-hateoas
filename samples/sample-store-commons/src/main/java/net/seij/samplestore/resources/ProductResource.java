@@ -86,7 +86,7 @@ public class ProductResource {
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response findByName(@PathParam("name") String name, @Context UriInfo uriInfo) {
         // self link
-        Link selfLink = Link.fromUriBuilder(uriInfo.getRequestUriBuilder()).rel("self").build();
+        Link selfLink = Links.fromUriBuilder("self",uriInfo.getRequestUriBuilder()).build();
         Product product = productService.findProductByName(name);
         // TODO we shall not put them here since it's basic operations for Rest, but how shall we specify that those operations are available or not, especially delete? it's like "can we push the delete button?"
         Link deleteLink = Links.fromUriBuilder("delete",uriInfo.getBaseUriBuilder()
