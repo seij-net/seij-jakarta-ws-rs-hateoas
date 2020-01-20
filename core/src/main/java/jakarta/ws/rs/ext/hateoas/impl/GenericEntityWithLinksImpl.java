@@ -109,6 +109,6 @@ public class GenericEntityWithLinksImpl<T> implements GenericEntityWithLinks<T> 
 
     @Override
     public String toString() {
-        return "GenericEntity{" + delegate.getEntity().toString() + ", " + delegate.getType().toString() + ", " + links + "}";
+        return "GenericEntityWithLinksImpl{" + delegate.getEntity().toString() + ", " + delegate.getType().toString() + ", " + links + "}";
     }
 }
