@@ -4,6 +4,8 @@
 
 *Project in active structuration, not ready for daily use*
 
+![](https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/workflows/Java%20CI/badge.svg)
+
 [Check the Wiki](https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki) for more details!
 
 JakartaEE / Jax-rs currently manages HATEOAS links as header links.
