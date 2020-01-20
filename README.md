@@ -46,3 +46,7 @@ public Response getById(@PathParam("id") UUID uid, @Context UriInfo uriInfo) {
 ## Installation
 
 Project aimed to Maven Central soon. Or else you can checkout it and `mvn clean install` it.
+
+## Documentation
+
+Implementation notes and further documentation can be found in Wiki pages https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki
