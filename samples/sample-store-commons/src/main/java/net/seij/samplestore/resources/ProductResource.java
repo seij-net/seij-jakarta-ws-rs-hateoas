@@ -1,6 +1,6 @@
 package net.seij.samplestore.resources;
 
-import jakarta.ws.rs.ext.hateoas.EntityLinked;
+import jakarta.ws.rs.ext.hateoas.GenericEntityWithLinks;
 import jakarta.ws.rs.ext.hateoas.Links;
 import jakarta.ws.rs.ext.hateoas.MediaTypeHateoas;
 import net.seij.samplestore.services.Product;
@@ -47,14 +47,14 @@ public class ProductResource {
                                     .path(ProductResource.class, "findById")
                                     .resolveTemplate("id", it.getId().toString()))
                             .build();
-                    return EntityLinked.build(it, Arrays.asList(selfProductLink));
+                    return GenericEntityWithLinks.build(it, Arrays.asList(selfProductLink));
                 })
                 .collect(Collectors.toList())
         )
                 .uriBuilder(uriInfo.getRequestUriBuilder())
                 .build();
         List<Link> links = Arrays.asList(selfLink, embeddedListLink);
-        return Response.ok(EntityLinked.build(new ProductListResult(products.size()), links)).build();
+        return Response.ok(GenericEntityWithLinks.build(new ProductListResult(products.size()), links)).build();
     }
 
     @GET
@@ -77,7 +77,7 @@ public class ProductResource {
                 .type("PATCH")
                 .build();
         // TODO Need a simpler way to build HAL, remove explicit new, create builder
-        EntityLinked entity = EntityLinked.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
+        GenericEntityWithLinks entity = GenericEntityWithLinks.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
         return Response.ok(entity).build();
     }
 
@@ -100,7 +100,7 @@ public class ProductResource {
                 .resolveTemplate("id", product.getId()))
                 .type("PATCH").build();
         // TODO Need a simpler way to build HAL, remove explicit new, create builder
-        EntityLinked entity = EntityLinked.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
+        GenericEntityWithLinks entity = GenericEntityWithLinks.build(toProductApiModel(product), Arrays.asList(selfLink, deleteLink, patchLink));
         return Response.ok(entity).build();
     }
 
@@ -117,7 +117,7 @@ public class ProductResource {
                 .resolveTemplate("id", createdId))
                 .build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(EntityLinked.build(Arrays.asList(createdLink))).build();
+        return Response.ok(GenericEntityWithLinks.buildEmpty(Arrays.asList(createdLink))).build();
     }
 
     @PATCH
@@ -137,7 +137,7 @@ public class ProductResource {
                 .resolveTemplate("id", id))
                 .build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(EntityLinked.build(patchResult, Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(GenericEntityWithLinks.build(patchResult, Arrays.asList(selfLink, createdLink))).build();
     }
 
     @POST
@@ -154,7 +154,7 @@ public class ProductResource {
                 .resolveTemplate("id", product.getId()))
                 .build();
         // TODO how to represent an empty object with only links ?
-        return Response.ok(EntityLinked.build(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
+        return Response.ok(GenericEntityWithLinks.build(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
     }
 
     @DELETE

@@ -1,5 +1,7 @@
 package jakarta.ws.rs.ext.hateoas;
 
+import jakarta.ws.rs.ext.hateoas.exceptions.LinkEmbeddableHasNoRelException;
+
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
@@ -78,7 +80,7 @@ public interface Links {
      */
 
     static <T> LinkEmbeddableBuilder<T> fromLink(Link link) {
-        if (link.getRel() == null) throw new IllegalStateException("Provided link has no rel property");
+        if (link.getRel() == null) throw new LinkEmbeddableHasNoRelException(link);
         return new LinkEmbeddableBuilder<T>().link(link);
     }
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.util.NameTransformer;
-import jakarta.ws.rs.ext.hateoas.EntityLinked;
+import jakarta.ws.rs.ext.hateoas.GenericEntityWithLinks;
 import jakarta.ws.rs.ext.hateoas.LinkEmbeddable;
 import kotlin.text.StringsKt;
 
@@ -15,32 +15,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JakartaWsRsHateoasHalSerializer extends StdSerializer<EntityLinked<?>> {
+public class JakartaWsRsHateoasHalSerializer extends StdSerializer<GenericEntityWithLinks<?>> {
 
     public static final JakartaWsRsHateoasHalSerializer Instance = new JakartaWsRsHateoasHalSerializer();
 
     private JakartaWsRsHateoasHalSerializer() {
-        super(EntityLinked.class, true);
+        super(GenericEntityWithLinks.class, true);
     }
 
     @Override
-    public void serialize(EntityLinked<?> entityLinked, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
-        Object entity = entityLinked.getEntity();
+    public void serialize(GenericEntityWithLinks<?> genericEntityWithLinks, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+        Object entity = genericEntityWithLinks.getEntity();
         jsonGenerator.writeStartObject(entity);
         Class<?> entityClass = entity.getClass();
-        if (entityLinked.getEntity() != EntityLinked.ENTITY_LINKED_UNIT) {
+        if (genericEntityWithLinks.getEntity() != GenericEntityWithLinks.ENTITY_LINKED_UNIT) {
             JsonSerializer<Object> valueSerializer = serializerProvider.findValueSerializer(entityClass).unwrappingSerializer(NameTransformer.NOP);
             valueSerializer.serialize(entity, jsonGenerator, serializerProvider);
         }
-        if (entityLinked.getLinks().size() > 0) {
-            adaptLinks(entityLinked, jsonGenerator);
+        if (genericEntityWithLinks.getLinks().size() > 0) {
+            adaptLinks(genericEntityWithLinks, jsonGenerator);
         }
         jsonGenerator.writeEndObject();
     }
 
-    private void adaptLinks(EntityLinked<?> entityLinked, JsonGenerator jsonGenerator) throws IOException {
+    private void adaptLinks(GenericEntityWithLinks<?> genericEntityWithLinks, JsonGenerator jsonGenerator) throws IOException {
         // Partitions the list to keed embedded links separated from regular links
-        Map<Boolean, List<Link>> linkTypeSegregation = entityLinked.getLinks().stream().collect(Collectors.partitioningBy(it -> it instanceof LinkEmbeddable && ((LinkEmbeddable<?>) it).embedded));
+        Map<Boolean, List<Link>> linkTypeSegregation = genericEntityWithLinks.getLinks().stream().collect(Collectors.partitioningBy(it -> it instanceof LinkEmbeddable && ((LinkEmbeddable<?>) it).embedded));
         List<Link> standard = linkTypeSegregation.get(false);
 
         List<LinkEmbeddable<?>> embedded = linkTypeSegregation.get(true).stream().map(it -> ((LinkEmbeddable<?>) it)).collect(Collectors.toList());

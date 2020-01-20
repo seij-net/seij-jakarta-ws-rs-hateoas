@@ -18,6 +18,7 @@ public class LinkEmbeddable<T> extends Link {
      * A map for all the link parameters such as "rel", "type", etc.
      */
     protected final Map<String, String> map;
+
     LinkEmbeddable(final URI uri, final Map<String, String> map, Supplier<T> resolver, boolean embedded) {
         this.uri = uri;
         this.map = map.isEmpty() ? Collections.<String, String>emptyMap() : Collections

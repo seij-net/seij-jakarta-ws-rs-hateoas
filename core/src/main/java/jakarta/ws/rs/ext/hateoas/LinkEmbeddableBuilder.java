@@ -42,7 +42,7 @@ public class LinkEmbeddableBuilder<T> implements Link.Builder {
 
     @Override
     public LinkEmbeddableBuilder<T> link(String link) {
-        Link l = LinkImpl.valueOf(link);
+        Link l = Link.valueOf(link);
         return link(l);
     }
 

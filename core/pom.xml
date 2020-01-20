@@ -8,27 +8,29 @@
     <version>0.0.1-SNAPSHOT</version>
     <description>Jakarta RESTful Web Services (Jax-RS) utilities to manage HATEOAS. Core module with APIs.</description>
     <properties>
+        <!-- build plugins -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <build-helper-maven-plugin.version>1.8</build-helper-maven-plugin.version>
         <version.maven-compiler-plugin>3.7.0</version.maven-compiler-plugin>
-        <slf4j.version>1.7.25</slf4j.version>
+        <!-- dependencies -->
         <jakartaee.version>8.0.0</jakartaee.version>
+        <!-- only for tests -->
         <junit-jupiter-api.version>5.5.2</junit-jupiter-api.version>
         <assertj.version>3.13.2</assertj.version>
-        <jakartaee.version>8.0.0</jakartaee.version>
+        <jersey.version>2.29.1</jersey.version>
     </properties>
     <dependencyManagement>
         <dependencies>
-        <!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-bom -->
-        <dependency>
-            <groupId>jakarta.platform</groupId>
-            <artifactId>jakarta.jakartaee-bom</artifactId>
-            <version>${jakartaee.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
+            <!-- https://mvnrepository.com/artifact/jakarta.platform/jakarta.jakartaee-bom -->
+            <dependency>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-bom</artifactId>
+                <version>${jakartaee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -38,26 +40,28 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
+            <!-- Junit 5 -->
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit-jupiter-api.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
+            <!-- we use assertj for fluent tests -->
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!--
+            doing tests we need an implementation of javax.ws.rs.ext.RuntimeDelegate,
+            We choose to take default JAX-RS implementation (Jersey) as you can see in RuntimeDelegate class.
+            If we don't, we wont be able to launch tests
+            -->
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-common</artifactId>
+            <version>${jersey.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
