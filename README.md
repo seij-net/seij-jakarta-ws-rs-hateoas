@@ -2,7 +2,9 @@
 
 ## Introduction
 
-** Project in active structuration, not ready for daily use  **
+*Project in active structuration, not ready for daily use*
+
+[Check the Wiki](https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki) for more details!
 
 JakartaEE / Jax-rs currently manages HATEOAS links as header links.
 
@@ -47,6 +49,4 @@ public Response getById(@PathParam("id") UUID uid, @Context UriInfo uriInfo) {
 
 Project aimed to Maven Central soon. Or else you can checkout it and `mvn clean install` it.
 
-## Documentation
 
-Implementation notes and further documentation can be found in Wiki pages https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki
