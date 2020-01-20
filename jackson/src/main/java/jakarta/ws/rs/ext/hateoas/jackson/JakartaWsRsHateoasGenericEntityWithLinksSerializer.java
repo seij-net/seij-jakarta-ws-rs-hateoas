@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import jakarta.ws.rs.ext.hateoas.GenericEntityWithLinks;
 import jakarta.ws.rs.ext.hateoas.LinkEmbeddable;
+import jakarta.ws.rs.ext.hateoas.impl.GenericEntityWithLinksImpl;
 import kotlin.text.StringsKt;
 
 import javax.ws.rs.core.Link;
@@ -15,11 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JakartaWsRsHateoasHalSerializer extends StdSerializer<GenericEntityWithLinks<?>> {
+public class JakartaWsRsHateoasGenericEntityWithLinksSerializer extends StdSerializer<GenericEntityWithLinks<?>> {
 
-    public static final JakartaWsRsHateoasHalSerializer Instance = new JakartaWsRsHateoasHalSerializer();
+    public static final JakartaWsRsHateoasGenericEntityWithLinksSerializer Instance = new JakartaWsRsHateoasGenericEntityWithLinksSerializer();
 
-    private JakartaWsRsHateoasHalSerializer() {
+    private JakartaWsRsHateoasGenericEntityWithLinksSerializer() {
         super(GenericEntityWithLinks.class, true);
     }
 

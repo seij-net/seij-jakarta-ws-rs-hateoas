@@ -1,7 +1,9 @@
 package jakarta.ws.rs.ext.hateoas.jackson;
 
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.module.SimpleAbstractTypeResolver;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import jakarta.ws.rs.ext.hateoas.impl.GenericEntityWithLinksImpl;
 
 public class JakartaWsRsHateoasModule extends SimpleModule {
 
@@ -11,7 +13,8 @@ public class JakartaWsRsHateoasModule extends SimpleModule {
 
     JakartaWsRsHateoasModule() {
         super(VERSION);
-        addSerializer(JakartaWsRsHateoasHalSerializer.Instance);
+        registerSubtypes(GenericEntityWithLinksImpl.class);
+        addSerializer(JakartaWsRsHateoasGenericEntityWithLinksSerializer.Instance);
         addSerializer(JakartaWsRsHateoasHalLinkSerializer.Instance);
         addSerializer(JakartaWsRsHateoasLinkEmbeddedSerializer.Instance);
     }

@@ -6,6 +6,7 @@ import jakarta.ws.rs.ext.hateoas.exceptions.GenericEntityWithLinkHasNoRelExcepti
 import jakarta.ws.rs.ext.hateoas.impl.GenericEntityWithLinksImpl;
 
 import javax.ws.rs.core.Link;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public interface GenericEntityWithLinks<T> {
@@ -58,12 +59,18 @@ public interface GenericEntityWithLinks<T> {
                 throw new GenericEntityLinkedDuplicateRelException(it, rel);
             rels.add(rel);
         });
-        return new GenericEntityWithLinksImpl<>(entity, links);
+        return new GenericEntityWithLinksImpl<>(entity, entity.getClass(), links);
     }
+
+    @NotNull Class<?> getRawType();
+
+    @NotNull Type getType();
 
     @NotNull
     T getEntity();
 
     @NotNull
     List<Link> getLinks();
+
+
 }
