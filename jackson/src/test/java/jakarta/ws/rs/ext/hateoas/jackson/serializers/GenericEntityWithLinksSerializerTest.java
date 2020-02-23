@@ -1,12 +1,10 @@
-package jakarta.ws.rs.ext.hateoas.jackson;
+package jakarta.ws.rs.ext.hateoas.jackson.serializers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.path.json.JsonPath;
 import jakarta.ws.rs.ext.hateoas.GenericEntityWithLinks;
 import jakarta.ws.rs.ext.hateoas.Links;
+import jakarta.ws.rs.ext.hateoas.jackson.HALTestOperationResult;
 import org.assertj.core.api.Assertions;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Link;
@@ -17,9 +15,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.path.json.JsonPath.from;
+import static jakarta.ws.rs.ext.hateoas.jackson.Fixtures.writeForTest;
 
-
-public class JakartaWsRsHateoasModuleTest {
+class GenericEntityWithLinksSerializerTest {
     @Test
     public void testHalNoLinks() {
         HALTestBean bean = new HALTestBean("title_a", "content_a");
@@ -88,36 +86,17 @@ public class JakartaWsRsHateoasModuleTest {
         Assertions.assertThat(json.getString("_embedded.myOperationName4[1].name")).isEqualTo("operation result 4 2");
     }
 
-    @Test
-    public void testSimpleLink() {
-        Link link = Links.fromUriBuilder("myOperationName", UriBuilder.fromUri("http://localhost:8080/my/path"))
-                .param("myparam1", "myvalue1")
-                .param("myparam2", "myvalue2")
-                .build();
-        JsonPath json = JsonPath.from(writeForTest(link));
-        Assertions.assertThat(json.getString("href")).isEqualTo("http://localhost:8080/my/path");
-        Assertions.assertThat(json.getString("params.myparam1")).isEqualTo("myvalue1");
-        Assertions.assertThat(json.getString("params.myparam2")).isEqualTo("myvalue2");
-        Assertions.assertThat(json.getString("params.rel")).isNull();
-    }
 
     @Test
-    public void testSimpleLinkNotParams() {
-        Link link = Links.fromUriBuilder("myOperationName", UriBuilder.fromUri("http://localhost:8080/my/path")).build();
-        JsonPath json = JsonPath.from(writeForTest(link));
-        Assertions.assertThat(json.getString("href")).isEqualTo("http://localhost:8080/my/path");
-        Assertions.assertThat(json.getString("params")).isNull();
-    }
-
-    @Test
-    public void testEmptyEntity() {
+    void testEmptyEntity() {
         String text = writeForTest(GenericEntityWithLinks.buildEmpty());
         Map<String, Object> str = from(text).get();
         Assertions.assertThat(str).isEmpty();
     }
 
+
     @Test
-    public void testEmptyEntityWithSimpleLink() {
+    void testEmptyEntityWithSimpleLink() {
         Link link = Links.fromUriBuilder("myOperationName", UriBuilder.fromUri("http://localhost:8080/my/path")).build();
         String text = writeForTest(GenericEntityWithLinks.buildEmpty(Arrays.asList(link)));
         Map<String, Object> str = from(text).get();
@@ -125,7 +104,7 @@ public class JakartaWsRsHateoasModuleTest {
     }
 
     @Test
-    public void testEmptyEntityWithEmbeddedLink() {
+    void testEmptyEntityWithEmbeddedLink() {
         Link link = Links.builder("myOperationName", () -> new HALTestOperationResult(UUID.randomUUID(), "name"))
                 .uriBuilder(UriBuilder.fromUri("http://localhost:8080/my/path"))
                 .build();
@@ -134,23 +113,6 @@ public class JakartaWsRsHateoasModuleTest {
         Assertions.assertThat(str).containsKey("_embedded");
     }
 
-    private String writeForTest(Object anything) {
-        try {
-            return configuredOm().writerWithDefaultPrettyPrinter().writeValueAsString(anything);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Configures an instance of Object mapper for tests
-     */
-    @NotNull
-    private ObjectMapper configuredOm() {
-        ObjectMapper om = new ObjectMapper();
-        om.registerModule(JakartaWsRsHateoasModule.Instance);
-        return om;
-    }
 
     /**
      * Simple class for testing a bean
@@ -173,21 +135,4 @@ public class JakartaWsRsHateoasModuleTest {
         }
     }
 
-    static class HALTestOperationResult {
-        private final UUID uid;
-        private final String name;
-
-        HALTestOperationResult(UUID uid, String name) {
-            this.uid = uid;
-            this.name = name;
-        }
-
-        public UUID getUid() {
-            return uid;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }

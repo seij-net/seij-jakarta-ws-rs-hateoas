@@ -1,4 +1,4 @@
-package jakarta.ws.rs.ext.hateoas.jackson;
+package jakarta.ws.rs.ext.hateoas.jackson.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -15,15 +15,15 @@ import java.util.stream.Collectors;
 /**
  * Jackson serializer for generic Links with Hateoas Hal representation mode
  */
-public class JakartaWsRsHateoasHalLinkSerializer extends StdSerializer<Link> {
+public class LinkSerializer extends StdSerializer<Link> {
 
-    static final JakartaWsRsHateoasHalLinkSerializer Instance = new JakartaWsRsHateoasHalLinkSerializer();
+    public static final LinkSerializer Instance = new LinkSerializer();
 
     public static final String KEY_PARAMS = "params";
     public static final String KEY_HREF = "href";
     private static final Set<String> FILTERED_KEYS = Collections.singleton("rel");
 
-    protected JakartaWsRsHateoasHalLinkSerializer() {
+    protected LinkSerializer() {
         super(Link.class, true);
     }
 

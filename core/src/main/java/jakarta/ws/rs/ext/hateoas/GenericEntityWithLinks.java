@@ -49,7 +49,7 @@ public interface GenericEntityWithLinks<T> {
      * Builds entity wrapper with entity and links
      */
     @NotNull
-    static <T> GenericEntityWithLinks<T> build(@NotNull T entity, @NotNull List<Link> links) {
+    static <T> GenericEntityWithLinks<T> build(@NotNull T entity, @NotNull List<? extends Link> links) {
         // Makes sure that all links have a rel and that links have distinct rels
         Set<String> rels = new HashSet<>(links.size());
         links.forEach(it -> {
@@ -70,7 +70,7 @@ public interface GenericEntityWithLinks<T> {
     T getEntity();
 
     @NotNull
-    List<Link> getLinks();
+    List<? extends Link> getLinks();
 
 
 }

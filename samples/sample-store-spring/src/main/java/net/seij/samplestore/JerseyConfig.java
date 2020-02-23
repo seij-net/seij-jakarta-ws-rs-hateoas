@@ -1,6 +1,7 @@
 package net.seij.samplestore;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.seij.samplestore.resources.ProductManualGenerationResource;
 import net.seij.samplestore.resources.ProductResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +23,7 @@ public class JerseyConfig extends ResourceConfig {
     public JerseyConfig() {
         // Register resources
         register(ProductResource.class);
+        register(ProductManualGenerationResource.class);
         // Register global object mapper
         register(new ObjectMapperContextResolver(objectMapper));
     }

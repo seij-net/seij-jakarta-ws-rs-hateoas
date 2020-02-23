@@ -1,4 +1,4 @@
-package jakarta.ws.rs.ext.hateoas.jackson;
+package jakarta.ws.rs.ext.hateoas.jackson.serializers;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -8,10 +8,10 @@ import jakarta.ws.rs.ext.hateoas.LinkEmbeddable;
 import javax.ws.rs.core.Link;
 import java.io.IOException;
 
-public class JakartaWsRsHateoasLinkEmbeddedSerializer extends StdSerializer<LinkEmbeddable<?>> {
-    static final JakartaWsRsHateoasLinkEmbeddedSerializer Instance = new JakartaWsRsHateoasLinkEmbeddedSerializer();
+public class HateoasLinkEmbeddedSerializer extends StdSerializer<LinkEmbeddable<?>> {
+    public static final HateoasLinkEmbeddedSerializer Instance = new HateoasLinkEmbeddedSerializer();
 
-    protected JakartaWsRsHateoasLinkEmbeddedSerializer() {
+    protected HateoasLinkEmbeddedSerializer() {
         super(LinkEmbeddable.class, true);
     }
 
@@ -19,7 +19,7 @@ public class JakartaWsRsHateoasLinkEmbeddedSerializer extends StdSerializer<Link
     public void serialize(LinkEmbeddable<?> value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
         if (value.embedded) {
             Object resolved = value.resolver.get();
-            if (resolved==null) {
+            if (resolved == null) {
                 gen.writeNull();
             } else {
                 gen.writeObject(resolved);

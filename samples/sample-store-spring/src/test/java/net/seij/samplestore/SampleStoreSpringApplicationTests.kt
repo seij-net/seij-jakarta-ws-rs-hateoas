@@ -1,5 +1,6 @@
 package net.seij.samplestore
 
+import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
@@ -26,6 +27,8 @@ internal class SampleStoreSpringApplicationTests {
     @Inject
     private lateinit var productService: ProductService
 
+    val PRINT = true
+
 
     @BeforeEach
     fun beforeEach() {
@@ -45,9 +48,12 @@ internal class SampleStoreSpringApplicationTests {
         Given {
             contentType(MediaType.APPLICATION_JSON)
         } When {
-            get("/products")
+            get("/products-manual-generation")
         } Then {
+            statusCode(200)
             body(Matchers.containsString("_embedded"))
+        } Extract {
+            if (PRINT) print(body())
         }
     }
 
@@ -61,9 +67,13 @@ internal class SampleStoreSpringApplicationTests {
                     .add("description", "description1")
                     .build().toString())
         } When {
-            post("/products")
+            post("/products-manual-generation")
         } Then {
+            statusCode(200)
             body(Matchers.containsString("_links"))
+
+        } Extract {
+            if (PRINT) print(body())
         }
 
         Given {
@@ -73,17 +83,23 @@ internal class SampleStoreSpringApplicationTests {
                     .add("description", "description2")
                     .build().toString())
         } When {
-            post("/products")
+            post("/products-manual-generation")
         } Then {
+            statusCode(200)
             body(Matchers.containsString("_links"))
+        } Extract {
+            if (PRINT) print(body())
         }
 
         Given {
             contentType(MediaType.APPLICATION_JSON)
         } When {
-            get("/products")
+            get("/products-manual-generation")
         } Then {
+            statusCode(200)
             body(Matchers.containsString("\"total\":2"))
+        } Extract {
+            if (PRINT) print(body())
         }
 
     }

@@ -1,5 +1,7 @@
 package net.seij.samplestore.resources
 
+import jakarta.ws.rs.ext.hateoas.Resource
+import jakarta.ws.rs.ext.hateoas.ResourcePatchResult
 import net.seij.samplestore.services.PatchResult
 import net.seij.samplestore.services.PatchValue
 import net.seij.samplestore.services.Product
@@ -16,7 +18,7 @@ data class ProductApiModel(
         val id: UUID,
         val name: String,
         val description: String?
-)
+): Resource<UUID>
 
 @ApiModel
 class ProductApiModelInitializer(
@@ -37,7 +39,7 @@ data class ProductApiModelPatch(
 data class ProductApiModelPatchResult(
         val name: PatchResult<String>,
         val description: PatchResult<String?>
-)
+): ResourcePatchResult<ProductApiModel, UUID>
 
 fun toProductApiModel(product: Product): ProductApiModel {
     return ProductApiModel(id = product.id, name = product.name, description = product.description)

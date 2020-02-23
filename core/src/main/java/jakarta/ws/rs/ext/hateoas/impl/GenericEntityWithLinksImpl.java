@@ -26,19 +26,19 @@ import java.util.Objects;
  */
 public class GenericEntityWithLinksImpl<T> implements GenericEntityWithLinks<T> {
     private final GenericEntity<T> delegate;
-    private final List<Link> links;
+    private final List<? extends Link> links;
 
     protected GenericEntityWithLinksImpl(final T entity) {
         this.delegate = new GenericEntity<>(entity, entity.getClass());
         this.links = Collections.emptyList();
     }
 
-    public GenericEntityWithLinksImpl(@NotNull T entity, @NotNull List<Link> links) {
+    public GenericEntityWithLinksImpl(@NotNull T entity, @NotNull List<? extends Link> links) {
         this.delegate = new GenericEntity<>(entity, entity.getClass());
         this.links = links;
     }
 
-    public GenericEntityWithLinksImpl(@NotNull T entity, @NotNull Type type, @NotNull List<Link> links) {
+    public GenericEntityWithLinksImpl(@NotNull T entity, @NotNull Type type, @NotNull List<? extends Link> links) {
         this.delegate = new GenericEntity<>(entity, type);
         this.links = links;
     }
@@ -83,7 +83,7 @@ public class GenericEntityWithLinksImpl<T> implements GenericEntityWithLinks<T> 
 
     @Override
     @NotNull
-    public List<Link> getLinks() {
+    public List<? extends Link> getLinks() {
         return links;
     }
 
