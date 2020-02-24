@@ -25,13 +25,13 @@ class GenericEntityWithLinksImplTest {
 
     @Test
     void given_listType_when_built_typeIsRetained() {
-        // First test is to ensure we write test correctly
+        // First test is to ensure we write test correctly with Generic Entity (standard JaxRS)
         GenericEntity<List<TestModel>> entity1 = new GenericEntity<List<TestModel>>(
                 Collections.singletonList(new TestModel("name"))) {
         };
         assertThat(GenericEntitySupport.getEnclosedType(entity1)).isEqualTo(TestModel.class);
 
-        // Now we can test that we didn't broke inheritance
+        // Now we can test that we didn't broke inheritance with our own type. We must have same result
         GenericEntityWithLinksImpl<List<TestModel>> entity = new GenericEntityWithLinksImpl<List<TestModel>>(
                 Collections.singletonList(new TestModel("name")),
                 Collections.emptyList()) {
