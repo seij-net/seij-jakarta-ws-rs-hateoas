@@ -2,12 +2,9 @@ package jakarta.ws.rs.ext.hateoas;
 
 import jakarta.ws.rs.ext.hateoas.exceptions.GenericEntityLinkedDuplicateRelException;
 import jakarta.ws.rs.ext.hateoas.exceptions.GenericEntityWithLinkHasNoRelException;
-import jakarta.ws.rs.ext.hateoas.impl.GenericEntityWithLinksImpl;
 import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.Link;
-
-import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
