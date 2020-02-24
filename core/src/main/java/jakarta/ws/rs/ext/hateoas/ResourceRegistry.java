@@ -3,6 +3,7 @@ package jakarta.ws.rs.ext.hateoas;
 import jakarta.ws.rs.ext.hateoas.impl.ResourceRegistryBuilderImpl;
 
 import javax.ws.rs.core.Link;
+import javax.ws.rs.core.UriBuilder;
 import java.util.List;
 
 public interface ResourceRegistry {
@@ -11,7 +12,7 @@ public interface ResourceRegistry {
         return new ResourceRegistryBuilderImpl();
     }
 
-    List<? extends Link> findLinks(Resource<?> entity);
+    List<? extends Link> findLinks(UriBuilder uriBuilder, Resource<?> entity);
 
     Link collectionLink(Class<?> resourceClass);
 

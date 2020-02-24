@@ -10,8 +10,12 @@ import jakarta.ws.rs.ext.hateoas.ResourceRegistry;
 import jakarta.ws.rs.ext.hateoas.jackson.serializers.support.LinksSerializerUtils;
 
 import javax.ws.rs.core.Link;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 import java.io.IOException;
 import java.util.List;
+
+import static jakarta.ws.rs.ext.hateoas.jackson.HateaoasJacksonContext.extractBaseUriBuilder;
 
 public class ResourceEntitySerializer extends StdSerializer<ResourceEntity<?, ?>> {
 
@@ -29,10 +33,10 @@ public class ResourceEntitySerializer extends StdSerializer<ResourceEntity<?, ?>
 
     @Override
     public void serialize(@NotNull ResourceEntity<?, ?> resourceEntity, @NotNull JsonGenerator jsonGenerator, @NotNull SerializerProvider serializerProvider) throws IOException {
+        UriBuilder baseUriBuilder = extractBaseUriBuilder(serializerProvider);
         Object entity = resourceEntity.getEntity();
-        List<? extends Link> links = resourceRegistry.findLinks(resourceEntity.getEntity());
+        List<? extends Link> links = resourceRegistry.findLinks(baseUriBuilder, resourceEntity.getEntity());
         GenericEntityWithLinks<?> g = GenericEntityWithLinks.build(entity, links);
         entityWithLinksSerializer.serialize(g, jsonGenerator, serializerProvider);
     }
-
 }

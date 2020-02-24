@@ -8,10 +8,10 @@ import jakarta.ws.rs.ext.hateoas.GenericEntityWithLinks;
 import jakarta.ws.rs.ext.hateoas.Links;
 import jakarta.ws.rs.ext.hateoas.ResourceRegistry;
 import jakarta.ws.rs.ext.hateoas.Resources;
-import jakarta.ws.rs.ext.hateoas.jackson.exceptions.HateoasJacksonConfigurationException;
+import jakarta.ws.rs.ext.hateoas.jackson.HateaoasJacksonContext;
 
 import javax.ws.rs.core.Link;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -30,17 +30,13 @@ public class ResourcesSerializer extends StdSerializer<Resources<?, ?>> {
         // self link
         Link selfLink = resourceRegistry.collectionLink(resources.getResourceClass());
 
-        // TODO this is too complicated and confusing to build as is. Need additional tooling to do that
-        // TODO unsafe calls ProductResource.class#findById, we need a typesafe way to do this
-
-        UriInfo uriInfo = (UriInfo) serializerProvider.getAttribute(UriInfo.class);
-        if (uriInfo == null) throw new HateoasJacksonConfigurationException();
+        UriBuilder uriBuilder = HateaoasJacksonContext.extractBaseUriBuilder(serializerProvider);
         // TODO list of items shall be embedded
         Link embeddedListLink = Links.builder("items", () -> resources.stream()
                 .map(it -> resourceRegistry.identityGetLink(resources.getResourceClass(), resourceRegistry.identifierExtractor(resources.getResourceClass()).fetch(it)))
                 .collect(Collectors.toList())
         )
-                .uriBuilder(uriInfo.getRequestUriBuilder())
+                .uriBuilder(uriBuilder)
                 .build();
         List<Link> links = Arrays.asList(selfLink, embeddedListLink);
         @NotNull GenericEntityWithLinks<Object> build = GenericEntityWithLinks.build(resources, links);

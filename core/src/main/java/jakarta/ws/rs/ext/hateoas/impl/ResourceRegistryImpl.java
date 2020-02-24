@@ -7,6 +7,8 @@ import jakarta.ws.rs.ext.hateoas.ResourceRegistry;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ws.rs.core.Link;
+import javax.ws.rs.core.UriBuilder;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +20,14 @@ public class ResourceRegistryImpl implements ResourceRegistry {
     public ResourceRegistryImpl(List<ResourceDescriptor> descriptors) {
         this.descriptors = descriptors;
         descriptorMap = new HashMap<>();
-        descriptors.forEach(it -> descriptorMap.put(it.getResourceClass(), it));
+        descriptors.forEach(it -> descriptorMap.put(it.getEntityClass(), it));
     }
 
     @Override
-    public List<? extends Link> findLinks(Resource<?> entity) {
-        throw new NotImplementedException();
+    public List<? extends Link> findLinks(UriBuilder uriBuilder, Resource<?> entity) {
+        ResourceDescriptor descriptor = descriptorMap.get(entity.getClass());
+        Class resourceClass = descriptor.getResourceClass();
+        return Collections.emptyList();
     }
 
     @Override
