@@ -84,9 +84,9 @@ Shall work using the following configurations
 
 Maven
 
-![](https://img.shields.io/badge/status-todo-red) : publish mavne packages on Github
+![](https://img.shields.io/badge/status-todo-red) : publish Maven packages on Github
 
-![](https://img.shields.io/badge/status-todo-red) : publish mavne packages on Maven Central
+![](https://img.shields.io/badge/status-todo-red) : publish Maven packages on Maven Central
 
 ```xml
 <dependencies>
