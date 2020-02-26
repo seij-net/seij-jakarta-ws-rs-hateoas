@@ -1,7 +1,8 @@
 package net.seij.samplestore;
 
 import jakarta.ws.rs.ext.hateoas.ResourceRegistry;
-import net.seij.samplestore.resources.ProductResourceDescriptor;
+import net.seij.samplestore.resources.ProductApiModel;
+import net.seij.samplestore.resources.ProductResource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -14,13 +15,10 @@ public class SampleStoreSpringApplication {
     }
 
     @Bean
-    ProductResourceDescriptor productResourceDescriptor() {
-        return new ProductResourceDescriptor();
-    }
-
-    @Bean
-    ResourceRegistry resourceRegistry(ProductResourceDescriptor pd) {
-        return ResourceRegistry.builder().addDescriptor(pd).build();
+    ResourceRegistry resourceRegistry() {
+        return ResourceRegistry.builder()
+                .addDescriptor(ProductApiModel.class, ProductResource.class)
+                .build();
     }
 
 }

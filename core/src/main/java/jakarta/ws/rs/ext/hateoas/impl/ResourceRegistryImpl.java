@@ -4,7 +4,6 @@ import jakarta.ws.rs.ext.hateoas.Resource;
 import jakarta.ws.rs.ext.hateoas.ResourceDescriptor;
 import jakarta.ws.rs.ext.hateoas.ResourceIdentifierExtractor;
 import jakarta.ws.rs.ext.hateoas.ResourceRegistry;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.ws.rs.core.Link;
 import javax.ws.rs.core.UriBuilder;
@@ -32,12 +31,12 @@ public class ResourceRegistryImpl implements ResourceRegistry {
 
     @Override
     public Link collectionLink(Class<?> resourceClass) {
-        throw new NotImplementedException();
+        throw new IllegalStateException("Not implemented yet");
     }
 
     @Override
     public Link identityGetLink(Class<?> resourceClass, Object identifier) {
-        throw new NotImplementedException();
+        throw new IllegalStateException("Not implemented yet");
     }
 
     @Override

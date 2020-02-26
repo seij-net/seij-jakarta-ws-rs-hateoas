@@ -2,6 +2,7 @@ package net.seij.samplestore.resources;
 
 import jakarta.ws.rs.ext.hateoas.MediaTypeHateoas;
 import jakarta.ws.rs.ext.hateoas.ResourceListOfList;
+import jakarta.ws.rs.ext.hateoas.annotations.*;
 import jakarta.ws.rs.ext.hateoas.impl.ResourceEntityImpl;
 import jakarta.ws.rs.ext.hateoas.impl.ResourceReferenceImpl;
 import net.seij.samplestore.services.Product;
@@ -25,7 +26,7 @@ public class ProductResource {
     private ProductService productService;
 
     @GET
-    @Path("/")
+    @Path("/") @ResourceOperationList
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response list(@Context UriInfo uriInfo) {
         List<Product> products = productService.listProducts();
@@ -36,15 +37,15 @@ public class ProductResource {
     }
 
     @GET
-    @Path("{id}")
+    @Path("{id}") @ResourceOperationGet
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
-    public Response findByI(@PathParam("id") UUID id, @Context UriInfo uriInfo) {
+    public Response findById(@PathParam("id") UUID id, @Context UriInfo uriInfo) {
         Product product = productService.findProductById(id);
         return Response.ok(ResourceEntityImpl.of(toProductApiModel(product))).build();
     }
 
     @GET
-    @Path("/name={name}")
+    @Path("/name={name}") @ResourceOperationOther(name="getByName")
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response findByName(@PathParam("name") String name, @Context UriInfo uriInfo) {
         Product product = productService.findProductByName(name);
@@ -52,7 +53,7 @@ public class ProductResource {
     }
 
     @POST
-    @Path("/")
+    @Path("/") @ResourceOperationPost
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response create(ProductApiModelInitializer initializer, @Context UriInfo uriInfo) {
         UUID createdId = productService.createProduct(initializer.getName(), initializer.getDescription());
@@ -60,7 +61,7 @@ public class ProductResource {
     }
 
     @PATCH
-    @Path("/{id}")
+    @Path("/{id}") @ResourceOperationPatch
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response updateViaPatch(@PathParam("id") UUID id, ProductApiModelPatch patch, @Context UriInfo uriInfo) {
         ProductApiModelPatchResult patchResult = new ProductApiModelPatchResult(
@@ -71,14 +72,14 @@ public class ProductResource {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{id}") @ResourceOperationPut
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     public Response updateFull(@PathParam("id") UUID id, ProductApiModelUpdater update, @Context UriInfo uriInfo) {
         Product product = productService.updateProduct(id, toProductUpdater(update));
         return Response.ok(ResourceEntityImpl.of(toProductApiModel(product))).build();
     }
 
-    @DELETE
+    @DELETE @ResourceOperationDelete
     @Path("/{id}")
     public Response delete(@PathParam("id") UUID id) {
         productService.deleteProduct(id);

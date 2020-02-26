@@ -2,6 +2,7 @@ package net.seij.samplestore.resources
 
 import jakarta.ws.rs.ext.hateoas.Resource
 import jakarta.ws.rs.ext.hateoas.ResourcePatchResult
+import jakarta.ws.rs.ext.hateoas.annotations.ResourceIdentifier
 import net.seij.samplestore.services.PatchResult
 import net.seij.samplestore.services.PatchValue
 import net.seij.samplestore.services.Product
@@ -15,6 +16,7 @@ data class ProductListResult(
 )
 
 data class ProductApiModel(
+        @ResourceIdentifier
         val id: UUID,
         val name: String,
         val description: String?
