@@ -22,7 +22,7 @@ or Spring environments. Provide server and client support based on JAX-RS princi
 
 # Sample code
 
-Target code we want to reach with automatic detection:
+Target code we want to reach. Shall autodetect annotations.
 
 ![](https://img.shields.io/badge/status-todo-red)
 
