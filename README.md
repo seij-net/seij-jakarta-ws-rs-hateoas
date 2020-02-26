@@ -8,32 +8,49 @@
 
 [Check the Wiki](https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki) for more details!
 
-JakartaEE / Jax-rs currently manages HATEOAS links as header links.
+### Goal
 
-This project provides tooling that fits into JakartaEE philosophy and help developers in managing HATEOAS, especially its HAL representation (with _links and _embedded in Json) - the easy way of course. 
+Write easily REST APIs with [HATEOAS](http://stateless.co/hal_specification.html) style with JAX-RS in JakartaEE (JavaEE)
+or Spring environments. Provide server and client support based on JAX-RS principles.
 
-The goal is to achieve a variety of formats but is currently focused on 
-* Using standard WS-RS that enriches existing links with embeddable links
-* Provide HAL representation of links
-  * as simple links : `"_links": { "operation": { "href": "..." }, ... }`
-  * as embedded links   : `"_embedded": { "operation": { _operation_data_ }, ... }`
-* Using Jackson (at first, Jsonb should be next)
-* Shall work using
-  * JavaEE 8 / JakartaEE 8 (tested with Wildfly 17, with embedds Resteasy)
-  * Spring(-Boot) with a JaxRS implementation (tested with Resteasy and Jackson)
-* Provide builder tools for links to avoid common errors and simplify syntax
+### Why
 
+* You can do it manually but it's awful to write and error prone. 
+* JaxRS only supports natively header links.
+* Spring Hateoas is ...meh, only supports Spring Webmvc, doesn't support Jax-RS
+* There is no easy client library
 
-## Code Samples
+# Sample code
 
-### Installation
+Target code we want to reach with automatic detection:
 
-Configure Jackson to add module (Spring-way or JavaEE way)
+![](https://img.shields.io/badge/status-todo-red)
+
+```java
+@Path("products")
+@ResourceHateaos
+class ProductsController {
+    @GET
+    @Path("{id}") @ResourceOperationGet
+    @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
+    Product getById(@PathParam("id") String id) {  }
+
+    @GET
+    @Path("/") @ResourceOperationList
+    @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
+    ResourceCollection<Product> list(ResourceCollectionFilter filter) {  }
+
+    @POST
+    @Path("/") @ResourceOperationOther("special")
+    @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
+    Product special() {  }
+
+}
 ```
-ObjectMapper om = (new ObjectMapper())
-om.addModule(JakartaWsRsHateoasModule.Instance)
-```
-In Rest endpoints, return a EntityLinked object with additional links :
+
+Project provides tooling to do it manually
+
+![](https://img.shields.io/badge/status-ok-green)
 
 ```
 @GET
@@ -47,8 +64,64 @@ public Response getById(@PathParam("id") UUID uid, @Context UriInfo uriInfo) {
 }
 ```
 
-## Installation
+# Stories
 
-Project aimed to Maven Central soon. Or else you can checkout it and `mvn clean install` it.
+Shall produce
 
+* ![](https://img.shields.io/badge/status-todo-red) simple links : `"_links": { "operation": { "href": "..." }, ... }`
+* ![](https://img.shields.io/badge/status-todo-red) embedded links   : `"_embedded": { "operation": { _operation_data_ }, ... }`
+* ![](https://img.shields.io/badge/status-todo-red) extensions for OpenAPI documentation when using Eclipse Microprofile OpenAPI
+
+Shall work using the following configurations
+
+* ![](https://img.shields.io/badge/status-todo-red) JavaEE 8 / JakartaEE (tests on Wildfly 17 + Resteasy + Jaxb)
+* ![](https://img.shields.io/badge/status-todo-red) JavaEE 8 / JakartaEE (tests on Wildfly 17 + Resteasy + Jackson)
+* ![](https://img.shields.io/badge/status-todo-red) Spring(-Boot) + Jackson + Resteasy
+* ![](https://img.shields.io/badge/status-ok-green) Spring(-Boot) + Jackson + Jersey 
+* ![](https://img.shields.io/badge/status-ok-green) Java 8
+
+# Installation
+
+Maven
+
+![](https://img.shields.io/badge/status-todo-red) : publish mavne packages on Github
+
+![](https://img.shields.io/badge/status-todo-red) : publish mavne packages on Maven Central
+
+```xml
+<dependencies>
+    <dependency>
+        <!-- core module required -->
+        <groupId>net.seij.jakarta-ws-rs-hateoas</groupId>
+        <artifactId>core</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+        <!-- if using jackson -->
+        <groupId>net.seij.jakarta-ws-rs-hateoas</groupId>
+        <artifactId>jackson</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
+
+![](https://img.shields.io/badge/status-ok-green) If using Jackson, configure Jackson to add module (Spring-way or JavaEE way)
+
+```
+ObjectMapper om = (new ObjectMapper())
+om.addModule(JakartaWsRsHateoasModule.Instance)
+```
+
+## Code Samples
+
+* see samples/sample-store-spring
+
+## Development installation
+
+![](https://img.shields.io/badge/status-ok-green)
+
+* checkout project
+* `mvn clean install`
+
+[Documentation in the Wiki](https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki) for more details!
 
