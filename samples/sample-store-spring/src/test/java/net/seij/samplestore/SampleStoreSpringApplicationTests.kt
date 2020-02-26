@@ -4,6 +4,8 @@ import io.restassured.module.kotlin.extensions.Extract
 import io.restassured.module.kotlin.extensions.Given
 import io.restassured.module.kotlin.extensions.Then
 import io.restassured.module.kotlin.extensions.When
+import io.restassured.response.ExtractableResponse
+import io.restassured.response.Response
 import net.seij.samplestore.services.ProductCategoryRepository
 import net.seij.samplestore.services.ProductRepository
 import net.seij.samplestore.services.ProductService
@@ -53,7 +55,7 @@ internal class SampleStoreSpringApplicationTests {
             statusCode(200)
             body(Matchers.containsString("_embedded"))
         } Extract {
-            if (PRINT) print(body())
+            debug()
         }
     }
 
@@ -73,7 +75,7 @@ internal class SampleStoreSpringApplicationTests {
             body(Matchers.containsString("_links"))
 
         } Extract {
-            if (PRINT) print(body())
+            debug()
         }
 
         Given {
@@ -88,10 +90,10 @@ internal class SampleStoreSpringApplicationTests {
             statusCode(200)
             body(Matchers.containsString("_links"))
         } Extract {
-            if (PRINT) print(body())
+            debug()
         }
 
-        Given {
+        val firstProductId = Given {
             contentType(MediaType.APPLICATION_JSON)
         } When {
             get("/products-manual-generation")
@@ -99,9 +101,25 @@ internal class SampleStoreSpringApplicationTests {
             statusCode(200)
             body(Matchers.containsString("\"total\":2"))
         } Extract {
-            if (PRINT) print(body())
+            debug()
+            body().path<String>("_embedded.items[0].id")
+        }
+        println(firstProductId)
+
+        Given {
+            contentType(MediaType.APPLICATION_JSON)
+        } When {
+            get("/products-manual-generation/$firstProductId")
+        } Then {
+            statusCode(200)
+        } Extract {
+            debug()
         }
 
+    }
+
+    private fun ExtractableResponse<Response>.debug() {
+        if (PRINT) println(body().asString())
     }
 }
 

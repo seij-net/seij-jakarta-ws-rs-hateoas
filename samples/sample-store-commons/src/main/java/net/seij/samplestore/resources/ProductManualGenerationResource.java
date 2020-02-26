@@ -124,7 +124,7 @@ public class ProductManualGenerationResource {
     @PATCH
     @Path("{id}")
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
-    public Response updateViaPatch(@PathParam("id") UUID id, ProductApiModelPatch patch, @Context UriInfo uriInfo) {
+    public Response update(@PathParam("id") UUID id, ProductApiModelPatch patch, @Context UriInfo uriInfo) {
         // self link
         Link selfLink = Links.fromUriBuilder("self", uriInfo.getRequestUriBuilder()).build();
         ProductApiModelPatchResult patchResult = new ProductApiModelPatchResult(
@@ -144,7 +144,7 @@ public class ProductManualGenerationResource {
     @POST
     @Path("{id}")
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
-    public Response updateFullOld(@PathParam("id") UUID id, ProductApiModelUpdater update, @Context UriInfo uriInfo) {
+    public Response updateFull(@PathParam("id") UUID id, ProductApiModelUpdater update, @Context UriInfo uriInfo) {
         // self link
         Link selfLink = Links.fromUriBuilder("self", uriInfo.getRequestUriBuilder()).build();
         Product product = productService.updateProduct(id, toProductUpdater(update));
@@ -156,6 +156,13 @@ public class ProductManualGenerationResource {
                 .build();
         // TODO how to represent an empty object with only links ?
         return Response.ok(GenericEntityWithLinks.build(toProductApiModel(product), Arrays.asList(selfLink, createdLink))).build();
+    }
+
+    @DELETE
+    @Path("{id}")
+    @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
+    public Response delete(@PathParam("id") UUID id, ProductApiModelUpdater update, @Context UriInfo uriInfo) {
+        return Response.ok().build();
     }
 
 }
