@@ -41,7 +41,7 @@ class ProductsController {
     ResourceCollection<Product> list(ResourceCollectionFilter filter) {  }
 
     @POST
-    @Path("/") @ResourceOperationOther("special")
+    @Path("{id}") @ResourceOperationOther("special")
     @Produces(MediaTypeHateoas.APPLICATION_HAL_JSON)
     Product special() {  }
 
