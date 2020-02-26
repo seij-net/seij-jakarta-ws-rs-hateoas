@@ -121,7 +121,7 @@ om.addModule(JakartaWsRsHateoasModule.Instance)
 ![](https://img.shields.io/badge/status-ok-green)
 
 * checkout project
-* `mvn clean install`
+* `./mvnw clean install`
 
 [Documentation in the Wiki](https://github.com/seij-net/seij-jakarta-ws-rs-hateoas/wiki) for more details!
 
